@@ -23,31 +23,37 @@ namespace VUMC_Phecode_Search_App.Pages
         {
             mapVals = new List<phecode_to_icd9_mapVals>();
             IList<phecode_info> phecode_infos = await _context.phecode_info.ToListAsync();
+            IList<icd9Info> icd9Infos = await _context.icd9Info.ToListAsync();
             CurrentFilter = searchString;
-            var mapValsQ = from s in _context.phecode_to_icd9_map
-                                                                        join phecode_info in phecode_infos on s.phecode equals phecode_info.phecode
-                                                                        select new { s, phecode_info };
+            var mapValsQ = from s in _context.phecode_to_icd9_map orderby s.icd9 ascending
+                           join phecode_info in phecode_infos on s.phecode equals phecode_info.phecode
+                           join icd9Info in icd9Infos on s.icd9 equals icd9Info.icd9_code
+                           select new { s, icd9Info, phecode_info };
             if (!String.IsNullOrEmpty(searchString))
             {
                 mapValsQ = from s in _context.phecode_to_icd9_map
-                                                               where s.icd9.Contains(searchString)
-                                                               join phecode_info in phecode_infos on s.phecode equals phecode_info.phecode
-                                                               select new { s, phecode_info };
+                           where s.icd9.Contains(searchString)
+                           join phecode_info in phecode_infos on s.phecode equals phecode_info.phecode
+                           join icd9Info in icd9Infos on s.icd9 equals icd9Info.icd9_code
+                           select new { s, icd9Info, phecode_info };
             }
+            mapValsQ = mapValsQ.Take(500);
             var mapValsAnon = await mapValsQ.ToListAsync();
             foreach(var mapValAnon in mapValsAnon)
             {
-                mapVals.Add(new phecode_to_icd9_mapVals(mapValAnon.s,mapValAnon.phecode_info));
+                mapVals.Add(new phecode_to_icd9_mapVals(mapValAnon.s, mapValAnon.icd9Info, mapValAnon.phecode_info));
             }
         }
         public class phecode_to_icd9_mapVals
         {
             public phecode_to_icd9_map codeMap { get; set; }
+            public icd9Info icd9 { get; set; }
             public phecode_info pc { get; set; }
 
-            public phecode_to_icd9_mapVals(phecode_to_icd9_map cm, phecode_info p)
+            public phecode_to_icd9_mapVals(phecode_to_icd9_map cm, icd9Info i, phecode_info p)
             {
                 codeMap = cm;
+                icd9 = i;
                 pc = p;
             }
         }
