@@ -4,7 +4,46 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+    <div class="text-center">
+        <h1 class="display-4">Search Page</h1>
+        <p>Search for Phecodes using ICD9 codes and vice versa:</p>
+        <form asp-page="./Index" method="get">
+            <div class="form-actions no-color">
+                <p>
+                    <input type="text" name="SearchString" value="@Model.CurrentFilter" />
+                    <input type="submit" value="Search" class="btn btn-default" /> |
+                </p>
+            </div>
+        </form>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        icd9
+                    </th>
+                    <th>
+                        phecode
+                    </th>
+                    <th>
+                        phecode_string
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.mapVals)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.codeMap.icd9)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.codeMap.phecode)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.pc.phecode_string)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>

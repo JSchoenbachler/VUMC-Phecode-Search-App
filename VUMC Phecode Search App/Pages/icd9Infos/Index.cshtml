@@ -1,0 +1,42 @@
+﻿@page
+@model VUMC_Phecode_Search_App.Pages.icd9Infos.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.icd9Info[0].icd9_code)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.icd9Info[0].icd9_string)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.icd9Info) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.icd9_code)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.icd9_string)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

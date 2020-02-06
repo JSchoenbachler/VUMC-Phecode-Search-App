@@ -1,0 +1,40 @@
+﻿@page
+@model VUMC_Phecode_Search_App.Pages.phecode_infos.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>phecode_info</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="phecode_info.Id" />
+            <div class="form-group">
+                <label asp-for="phecode_info.phecode" class="control-label"></label>
+                <input asp-for="phecode_info.phecode" class="form-control" />
+                <span asp-validation-for="phecode_info.phecode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="phecode_info.phecode_string" class="control-label"></label>
+                <input asp-for="phecode_info.phecode_string" class="form-control" />
+                <span asp-validation-for="phecode_info.phecode_string" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
