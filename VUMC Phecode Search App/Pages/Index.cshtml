@@ -4,34 +4,56 @@
     ViewData["Title"] = "Home page";
 }
 
-    <div class="text-center">
-        <h1 class="display-4">Search Page</h1>
-        <p>Search for Phecodes using ICD9 codes and vice versa:</p>
-        <form asp-page="./Index" method="get">
-            <div class="form-actions no-color">
-                <p>
-                    <input type="text" name="SearchString" value="@Model.CurrentFilter" />
-                    <input type="submit" value="Search" class="btn btn-default" /> |
-                </p>
-            </div>
-        </form>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>
-                        icd9
-                    </th>
-                    <th>
-                        phecode
-                    </th>
-                    <th>
-                        phecode_string
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.mapVals)
-                {
+<div class="text-center">
+    <h1 class="display-4">Search Page</h1>
+    <p>Search for Phecodes using ICD9 codes and vice versa:</p>
+    <form asp-page="./Index" method="get">
+        <div class="form-actions no-color">
+            <p>
+                Search By: <select name="SearchBy" value="@Model.SearchFilter">
+                    @switch (@Model.SearchFilter)
+                    {
+                        case null:
+                            <option value="icd9">icd9</option>
+                            <option value="phecode">phecode</option>
+                            break;
+                        case "icd9":
+                            <option value="icd9">icd9</option>
+                            <option value="phecode">phecode</option>
+                            break;
+                        default:
+                            <option value="phecode">phecode</option>
+                            <option value="icd9">icd9</option>
+                            break;
+                    }
+
+                </select>
+                <input type="text" name="SearchString" value="@Model.CurrentFilter" />
+                <input type="submit" value="Search" class="btn btn-default" /> |<br/>
+                Exact Match?&nbsp;&nbsp;<input type="checkbox" name="SearchExact" value="@Model.ExactFilter" />
+            </p>
+        </div>
+    </form>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    icd9
+                </th>
+                <th>
+                    icd9_string
+                </th>
+                <th>
+                    phecode
+                </th>
+                <th>
+                    phecode_string
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.mapVals)
+            {
                 <tr>
                     <td>
                         @Html.DisplayFor(modelItem => item.codeMap.icd9)
@@ -46,7 +68,7 @@
                         @Html.DisplayFor(modelItem => item.pc.phecode_string)
                     </td>
                 </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+            }
+        </tbody>
+    </table>
+</div>
