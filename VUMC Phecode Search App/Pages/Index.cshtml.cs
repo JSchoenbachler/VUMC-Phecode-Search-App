@@ -29,23 +29,39 @@ namespace VUMC_Phecode_Search_App.Pages
             IList<icd9Info> icd9Infos = await _context.icd9Info.ToListAsync();
             CurrentFilter = searchString;
             SearchFilter = searchBy;
-            ExactFilter = (searchExact != null && searchExact == "on");
+            ExactFilter = ((searchExact != null && searchExact == "on") || (!String.IsNullOrEmpty(CurrentFilter) && CurrentFilter.Contains(",")));
             var mapValsQ = from s in _context.phecode_to_icd9_map orderby s.icd9 ascending
                            join phecode_info in phecode_infos on s.phecode equals phecode_info.phecode
                            join icd9Info in icd9Infos on s.icd9 equals icd9Info.icd9_code
                            select new { s, icd9Info, phecode_info };
             if (!String.IsNullOrEmpty(searchString))
             {
-
+                HashSet<String> searchStrings = new HashSet<String>();
+                if (searchString.Contains(","))
+                {
+                    searchStrings = new HashSet<String>(searchString.Split(","));
+                }
                 if (!String.IsNullOrEmpty(searchBy) && searchBy.Equals("phecode"))
                 {
                     if(ExactFilter)
                     {
-                        mapValsQ = from s in _context.phecode_to_icd9_map
-                                   where s.phecode.Equals(searchString)
-                                   join phecode_info in phecode_infos on s.phecode equals phecode_info.phecode
-                                   join icd9Info in icd9Infos on s.icd9 equals icd9Info.icd9_code
-                                   select new { s, icd9Info, phecode_info };
+                        if (searchStrings.Count() > 0)
+                        {
+                            mapValsQ = from s in _context.phecode_to_icd9_map
+                                       where searchStrings.Contains(s.phecode)
+                                       join phecode_info in phecode_infos on s.phecode equals phecode_info.phecode
+                                       join icd9Info in icd9Infos on s.icd9 equals icd9Info.icd9_code
+                                       select new { s, icd9Info, phecode_info };
+                        }
+                        else
+                        {
+                            mapValsQ = from s in _context.phecode_to_icd9_map
+                                       where s.phecode.Equals(searchString)
+                                       join phecode_info in phecode_infos on s.phecode equals phecode_info.phecode
+                                       join icd9Info in icd9Infos on s.icd9 equals icd9Info.icd9_code
+                                       select new { s, icd9Info, phecode_info };
+                        }
+                        
                     }
                     else
                     {
@@ -59,13 +75,24 @@ namespace VUMC_Phecode_Search_App.Pages
                 }
                 else
                 {
-                    if (ExactFilter != null && ExactFilter)
+                    if (ExactFilter)
                     {
-                        mapValsQ = from s in _context.phecode_to_icd9_map
-                                   where s.icd9.Equals(searchString)
-                                   join phecode_info in phecode_infos on s.phecode equals phecode_info.phecode
-                                   join icd9Info in icd9Infos on s.icd9 equals icd9Info.icd9_code
-                                   select new { s, icd9Info, phecode_info };
+                        if (searchStrings.Count() > 0)
+                        {
+                            mapValsQ = from s in _context.phecode_to_icd9_map
+                                       where searchStrings.Contains(s.icd9)
+                                       join phecode_info in phecode_infos on s.phecode equals phecode_info.phecode
+                                       join icd9Info in icd9Infos on s.icd9 equals icd9Info.icd9_code
+                                       select new { s, icd9Info, phecode_info };
+                        }
+                        else
+                        {
+                            mapValsQ = from s in _context.phecode_to_icd9_map
+                                       where s.icd9.Equals(searchString)
+                                       join phecode_info in phecode_infos on s.phecode equals phecode_info.phecode
+                                       join icd9Info in icd9Infos on s.icd9 equals icd9Info.icd9_code
+                                       select new { s, icd9Info, phecode_info };
+                        }
                     }
                     else
                     {
