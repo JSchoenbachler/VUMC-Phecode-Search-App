@@ -29,18 +29,23 @@ namespace VUMC_Phecode_Search_App.Pages
             IList<icd9Info> icd9Infos = await _context.icd9Info.ToListAsync();
             CurrentFilter = searchString;
             SearchFilter = searchBy;
+            //Sets exact match either if the checkbox is checked or it is comma delimited
             ExactFilter = ((searchExact != null && searchExact == "on") || (!String.IsNullOrEmpty(CurrentFilter) && CurrentFilter.Contains(",")));
+            //Instantiates anonymous list as variable
             var mapValsQ = from s in _context.phecode_to_icd9_map orderby s.icd9 ascending
                            join phecode_info in phecode_infos on s.phecode equals phecode_info.phecode
                            join icd9Info in icd9Infos on s.icd9 equals icd9Info.icd9_code
                            select new { s, icd9Info, phecode_info };
+            //If string is not empty, begins searching parameters
             if (!String.IsNullOrEmpty(searchString))
             {
+                //If the string contains a "," create a Hash Set for use in a contains statement as part of the query.
                 HashSet<String> searchStrings = new HashSet<String>();
                 if (searchString.Contains(","))
                 {
                     searchStrings = new HashSet<String>(searchString.Split(","));
                 }
+                //Searches by Phecode
                 if (!String.IsNullOrEmpty(searchBy) && searchBy.Equals("phecode"))
                 {
                     if(ExactFilter)
@@ -71,8 +76,9 @@ namespace VUMC_Phecode_Search_App.Pages
                                    join icd9Info in icd9Infos on s.icd9 equals icd9Info.icd9_code
                                    select new { s, icd9Info, phecode_info };
                     }
-                    
+
                 }
+                //Searches by icd9
                 else
                 {
                     if (ExactFilter)
@@ -104,10 +110,13 @@ namespace VUMC_Phecode_Search_App.Pages
                     }
                 }
             }
+            //Limits results to not overload page on too many results returned.
             mapValsQ = mapValsQ.Take(500);
             var mapValsAnon = await mapValsQ.ToListAsync();
+            //Iterates over anonymized list to create list of wrapper class containing all 3 object information
             foreach(var mapValAnon in mapValsAnon)
             {
+                //Due to there being duplicate instances of both ICd9 codes and Phecodes, the joins produced multiple duplicates. The hash set contains method checks to ensure no dupes are added.
                 if (!stringHashList.Contains(mapValAnon.icd9Info.icd9_string + "---" + mapValAnon.phecode_info.phecode_string))
                 {
                     mapVals.Add(new phecode_to_icd9_mapVals(mapValAnon.s, mapValAnon.icd9Info, mapValAnon.phecode_info));
@@ -115,6 +124,7 @@ namespace VUMC_Phecode_Search_App.Pages
                 }
             }
         }
+        //Wrapper class to contain all 3 objects
         public class phecode_to_icd9_mapVals
         {
             public phecode_to_icd9_map codeMap { get; set; }
