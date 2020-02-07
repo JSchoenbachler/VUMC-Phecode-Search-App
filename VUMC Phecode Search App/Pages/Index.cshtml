@@ -1,7 +1,7 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Search Page";
 }
 
 <div class="text-center">
@@ -29,7 +29,7 @@
 
                 </select>
                 <input type="text" name="SearchString" value="@Model.CurrentFilter" />
-                <input type="submit" value="Search" class="btn btn-default" /> |<br/>
+                <input type="submit" value="Search" class="btn btn-default" /><br/>
                 Exact Match?&nbsp;&nbsp;<input type="checkbox" name="SearchExact" value="@Model.ExactFilter" />
             </p>
         </div>
